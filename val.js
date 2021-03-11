@@ -1,76 +1,38 @@
-$(function () {
 
-    $.validator.setDefaults({
-        errorClass: 'help-block',
-        highlight: function (element) {
-            $(element)
-                    .closest('.form-group')
-                    .addClass('has-error');
-        },
-        unhighlight: function (element) {
-            $(element)
-                    .closest('.form-group')
-                    .removeClass('has-error');
-        },
-        errorPlacement: function (error, element) {
-            if (element.prop('type') === 'radio') {
-                error.insertAfter(element.parent());
-            } else {
-                error.insertAfter(element);
-            }
-        }
+$(document).ready(function () {
 
-    });
-    
-	
-    
-    $("#form").validate({
+    $('#outcomeFormDialog form').validate({  // initialize plugin
         rules: {
-            firstname: {
+            amount: {
+                // money: true, //<-- no such rule
                 required: true
             },
-            lastname:{
-                required: true
-            },
-            email:{
-                required: true
-            },
-            mobile:{
-                required: true
-            },
-            city:{
-                required: true
-            },
-            password:{
-                required: true
+            comment: {
+                required: false // superfluous; "false" same as leaving this rule out.
             }
-                
         },
-            messages:
-                    {
-                        firstname:{
-                            required: 'plz enter first name'
-                        },
-                        lastname:{
-                            required: 'plz enter last name'
-                        },
-                        email:{
-                            required: 'plz enter email'
-                        },
-                        mobile:{
-                            required: 'plz enter mobile number'
-                        },
-                        city:{
-                            required: 'plz enter city'
-                        },
-                        password:{
-                            required: 'plz enter password'
-                        }
-                    }
-        
+        highlight: function (element) {
+            $(element).closest('.control-group')
+                .removeClass('success').addClass('error');
+        },
+        success: function (element) {
+            element.addClass('valid').closest('.control-group')
+                .removeClass('error').addClass('success');
+        },
+        submitHandler: function (form) {
+            // form validates so do the ajax
+            $.ajax({
+                type: $(form).attr('method'),
+                url: "../php/client/json.php",
+                data: $(form).serialize(),
+                success: function (data, status) {
+                    // ajax done
+                    // do whatever & close the modal
+                    $(this).modal('hide');
+                }
+            });
+            return false; // ajax used, block the normal submit
+        }
     });
+
 });
-
-
-
-
